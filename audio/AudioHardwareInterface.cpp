@@ -130,11 +130,13 @@ size_t AudioHardwareBase::getInputBufferSize(uint32_t sampleRate, int format, in
     return 320;
 }
 
+#ifndef USES_AUDIO_LEGACY
 // default implementation is unsupported
 status_t AudioHardwareBase::getMasterVolume(float *volume)
 {
     return INVALID_OPERATION;
 }
+#endif
 
 status_t AudioHardwareBase::dumpState(int fd, const Vector<String16>& args)
 {

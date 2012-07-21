@@ -38,7 +38,9 @@ public:
     virtual status_t    initCheck();
 
     virtual status_t    setVoiceVolume(float volume);
+#ifndef USES_AUDIO_LEGACY
     virtual status_t    setMasterVolume(float volume);
+#endif
 
     virtual status_t    setMode(int mode);
 
