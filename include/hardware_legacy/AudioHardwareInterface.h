@@ -224,7 +224,6 @@ public:
      */
     virtual status_t    setMasterVolume(float volume) = 0;
 
-#ifndef USES_AUDIO_LEGACY
     /**
      * Get the current master volume value for the HAL, if the HAL supports
      * master volume control.  AudioFlinger will query this value from the
@@ -232,7 +231,6 @@ public:
      * the initial master volume across all HALs.
      */
     virtual status_t    getMasterVolume(float *volume) = 0;
-#endif
 
     /**
      * setMode is called when the audio mode changes. NORMAL mode is for
