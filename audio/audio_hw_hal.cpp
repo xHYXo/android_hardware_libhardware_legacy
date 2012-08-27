@@ -368,11 +368,8 @@ static int adev_set_master_volume(struct audio_hw_device *dev, float volume)
 #ifndef ICS_AUDIO_BLOB
 static int adev_get_master_volume(struct audio_hw_device *dev, float* volume)
 {
-#ifndef USES_AUDIO_LEGACY
     struct legacy_audio_device *ladev = to_ladev(dev);
     return ladev->hwif->getMasterVolume(volume);
-#endif
-    return INVALID_OPERATION;
 }
 #endif
 
@@ -462,28 +459,18 @@ static int adev_open_output_stream(struct audio_hw_device *dev,
         return -ENOMEM;
 
 #ifndef ICS_AUDIO_BLOB
-#ifdef USES_AUDIO_LEGACY
-    uint32_t channels;
-    channels = config->channel_mask << 2;
-    out->legacy_out = ladev->hwif->openOutputStream(devices, (int *) &config->format,
-                                                    &channels,
-                                                    &config->sample_rate, &status);
-    config->channel_mask = channels;
-#else
     out->legacy_out = ladev->hwif->openOutputStream(devices, (int *) &config->format,
                                                     &config->channel_mask,
                                                     &config->sample_rate, &status);
-#endif
+#else
+#ifdef USES_AUDIO_LEGACY
+    *channels = *channels << 2;
+    out->legacy_out = ladev->hwif->openOutputStream(devices, format, channels,
+                                                    sample_rate, &status);
+    *channels = *channels >> 2;
 #else
     out->legacy_out = ladev->hwif->openOutputStream(devices, format, channels,
                                                     sample_rate, &status);
-#endif
-
-#ifdef USES_AUDIO_LEGACY
-#ifndef ICS_AUDIO_BLOB
-    config->channel_mask = config->channel_mask >> 2;
-#else
-    *channels = *channels >> 2;
 #endif
 #endif
 
@@ -558,10 +545,19 @@ static int adev_open_input_stream(struct audio_hw_device *dev,
                                                  &config->channel_mask, &config->sample_rate,
                                                  &status, (AudioSystem::audio_in_acoustics)0);
 #else
+#ifdef USES_AUDIO_LEGACY
+    *channels = *channels << 2;
+    in->legacy_in = ladev->hwif->openInputStream(devices, format, channels,
+                                    sample_rate, &status,
+                                    (AudioSystem::audio_in_acoustics)acoustics);
+    *channels = *channels >> 2;
+#else
     in->legacy_in = ladev->hwif->openInputStream(devices, format, channels,
                                     sample_rate, &status,
                                     (AudioSystem::audio_in_acoustics)acoustics);
 #endif
+#endif
+
     if (!in->legacy_in) {
         ret = status;
         goto err_open;

@@ -1307,7 +1307,7 @@ AudioPolicyManagerBase::AudioPolicyManagerBase(AudioPolicyClientInterface *clien
     }
 
     ALOGE_IF((mAttachedOutputDevices & ~mAvailableOutputDevices),
-             "Not output found for attached devices %08x",
+             "No output found for attached devices %08x",
              (mAttachedOutputDevices & ~mAvailableOutputDevices));
 
     ALOGE_IF((mPrimaryOutput == 0), "Failed to open primary output");
